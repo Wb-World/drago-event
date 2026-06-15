@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from './lib/supabase'
 import { formatDate, formatTime } from './lib/utils'
+import logoImg from '../image.png'
 
 /* ── Lightbox ─────────────────────────────────── */
 function Lightbox({ src, onClose }) {
@@ -64,6 +65,24 @@ function BookingRow({ booking, onAction }) {
     }
   }
 
+  async function handleDelete() {
+    if (!window.confirm(`Are you sure you want to delete the booking for Seat ${booking.seat_number}?`)) return
+    setActing(true)
+    setRowError('')
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .eq('id', booking.id)
+      if (error) throw error
+      await onAction()
+    } catch (err) {
+      setRowError(err.message || 'Delete failed.')
+    } finally {
+      setActing(false)
+    }
+  }
+
   return (
     <>
       <tr>
@@ -85,8 +104,8 @@ function BookingRow({ booking, onAction }) {
           <span className={`chip chip-${booking.status}`}>{booking.status}</span>
           {rowError && <div className="inline-error">{rowError}</div>}
         </td>
-        <td>
-          {booking.status === 'pending' ? (
+        <td style={{ display: 'flex', gap: '8px' }}>
+          {booking.status === 'pending' && (
             <>
               <button
                 className="btn-approve"
@@ -103,9 +122,25 @@ function BookingRow({ booking, onAction }) {
                 {acting ? '...' : 'Reject'}
               </button>
             </>
-          ) : (
-            <span style={{ color: '#2a2a2a', fontSize: '12px' }}>—</span>
           )}
+          <button
+            className="btn-delete"
+            style={{ 
+              background: 'rgba(239, 68, 68, 0.12)', 
+              color: '#ff6b6b', 
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '11px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.2s'
+            }}
+            onClick={handleDelete}
+            disabled={acting}
+          >
+            {acting ? '...' : 'Delete'}
+          </button>
         </td>
       </tr>
       {lightboxSrc && <Lightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />}
@@ -144,11 +179,32 @@ export default function AdminApp() {
     return () => clearInterval(intervalRef.current)
   }, [fetchBookings])
 
+  async function handleClearAll() {
+    if (!window.confirm('WARNING: Are you sure you want to delete ALL bookings from the database? This cannot be undone.')) return
+    setLoading(true)
+    setFetchError('')
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .gt('seat_number', 0)
+      if (error) throw error
+      await fetchBookings()
+    } catch (err) {
+      setFetchError(err.message || 'Failed to clear bookings.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="animate-fade-in">
       {/* Admin Navbar */}
-      <nav className="admin-navbar">
-        <div className="admin-navbar-title">DRAGO EVENT</div>
+      <nav className="admin-navbar" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src={logoImg} alt="Drago Logo" style={{ height: '32px', width: 'auto', borderRadius: '4px' }} />
+          <div className="admin-navbar-title">DRAGO EVENT</div>
+        </div>
         <span className="admin-navbar-sep">|</span>
         <div className="admin-navbar-sub">ADMIN</div>
         <button className="navbar-refresh" onClick={fetchBookings}>Refresh</button>
@@ -167,9 +223,29 @@ export default function AdminApp() {
 
           <div className="section-header">
             <h2>All Bookings</h2>
-            {lastRefresh && (
-              <span className="last-refresh">Last updated: {formatTime(lastRefresh)}</span>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              {bookings.length > 0 && (
+                <button 
+                  onClick={handleClearAll} 
+                  style={{ 
+                    background: 'rgba(239, 68, 68, 0.15)', 
+                    color: '#ff6b6b', 
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Clear All Bookings
+                </button>
+              )}
+              {lastRefresh && (
+                <span className="last-refresh">Last updated: {formatTime(lastRefresh)}</span>
+              )}
+            </div>
           </div>
 
           {loading ? (

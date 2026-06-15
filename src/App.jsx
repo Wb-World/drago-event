@@ -7,6 +7,7 @@ import Home    from './pages/Home'
 import About   from './pages/About'
 import Booking from './pages/Booking'
 import Contact from './pages/Contact'
+import logoImg from '../image.png'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -60,7 +61,7 @@ function Inner() {
     <>
       {/* Global Page Preloader */}
       <div className={`preloader-overlay ${!initialLoading ? 'fade-out' : ''}`}>
-        <div className="preloader-logo">DRAGO<span>.</span></div>
+        <img src={logoImg} alt="Drago Logo" className="preloader-logo-img" style={{ height: '56px', width: 'auto', marginBottom: '24px', display: 'block', borderRadius: '8px' }} />
         <div className="preloader-spinner"></div>
       </div>
 

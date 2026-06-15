@@ -167,7 +167,7 @@ export default function Booking({ bookings, refreshBookings, loadingBookings }) 
           <p style={{ fontSize: '16px', color: 'var(--text-secondary)', marginTop: '12px' }}>
             Book your slot in the elite seat zone. Review layout and secure tickets below.
           </p>
-          <div className="price-badge">Seat Price: Rs. 299</div>
+          <div className="price-badge">Seat Price: Rs. 99</div>
         </div>
 
         {/* Legend */}
@@ -189,39 +189,49 @@ export default function Booking({ bookings, refreshBookings, loadingBookings }) 
             
             {loadingBookings ? (
               // Skeleton seats loading state
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {Array.from({ length: 8 }).map((_, rIdx) => (
-                  <div className="seat-row" key={rIdx}>
-                    {Array.from({ length: 18 }).map((_, sIdx) => (
-                      <div className="seat skeleton" style={{ width: '28px', height: '28px' }} key={sIdx} />
-                    ))}
-                  </div>
-                ))}
+              <div className="theater-seats-scroll-wrapper" style={{ overflowX: 'auto', width: '100%', paddingBottom: '16px', paddingTop: '10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '680px', margin: '0 auto' }}>
+                  {ROW_NAMES.map((rowName, rIdx) => (
+                    <div className={`seat-row seat-row-${rowName}`} key={rowName}>
+                      {Array.from({ length: 20 }, (_, cIdx) => {
+                        const colIndex = cIdx + 1
+                        return (
+                          <div key={colIndex} className={`seat-wrapper seat-col-${colIndex}`}>
+                            <div className="seat skeleton" style={{ width: '28px', height: '28px' }} />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {ROW_NAMES.map((rowName, rIdx) => (
-                  <div className={`seat-row seat-row-${rowName}`} key={rowName}>
-                    {Array.from({ length: 20 }, (_, cIdx) => {
-                      const colIndex = cIdx + 1
-                      const seatNum = rIdx * 20 + colIndex
-                      const state = getSeatState(seatNum)
-                      const isSel = selectedSeat === seatNum
-                      const seatCls = isSel ? 'seat-selected' : `seat-${state}`
-                      
-                      return (
-                        <div 
-                          key={seatNum} 
-                          className={`seat ${seatCls} seat-col-${colIndex}`}
-                          onClick={() => handleSeatClick(seatNum)}
-                          title={`Seat ${rowName}${colIndex} (Seat No. ${seatNum}) - Status: ${state.toUpperCase()}`}
-                        >
-                          {seatNum}
-                        </div>
-                      )
-                    })}
-                  </div>
-                ))}
+              <div className="theater-seats-scroll-wrapper" style={{ overflowX: 'auto', width: '100%', paddingBottom: '16px', paddingTop: '10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '680px', margin: '0 auto' }}>
+                  {ROW_NAMES.map((rowName, rIdx) => (
+                    <div className={`seat-row seat-row-${rowName}`} key={rowName}>
+                      {Array.from({ length: 20 }, (_, cIdx) => {
+                        const colIndex = cIdx + 1
+                        const seatNum = rIdx * 20 + colIndex
+                        const state = getSeatState(seatNum)
+                        const isSel = selectedSeat === seatNum
+                        const seatCls = isSel ? 'seat-selected' : `seat-${state}`
+                        
+                        return (
+                          <div key={seatNum} className={`seat-wrapper seat-col-${colIndex}`}>
+                            <div 
+                              className={`seat ${seatCls}`}
+                              onClick={() => handleSeatClick(seatNum)}
+                              title={`Seat ${rowName}${colIndex} (Seat No. ${seatNum}) - Status: ${state.toUpperCase()}`}
+                            >
+                              {seatNum}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -255,19 +265,19 @@ export default function Booking({ bookings, refreshBookings, loadingBookings }) 
               <div className="checkout-details animate-fade-in">
                 <h3>Pay Admission</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: 1.6 }}>
-                  Scan the UPI QR code below and complete the admission payment of Rs. 299.
+                  Scan the UPI QR code below and complete the admission payment of Rs. 99.
                 </p>
 
                 <div className="checkout-qr-container" style={{ marginTop: '24px' }}>
                   <div className="checkout-qr-glow">
                     <QRCode />
                   </div>
-                  <p className="qr-label">Drago Launch Event Ticket — Rs. 299</p>
+                  <p className="qr-label">Drago Launch Event Ticket — Rs. 99</p>
                 </div>
 
                 <div className="checkout-price-row">
                   <span>Ticket Price:</span>
-                  <span>Rs. 299</span>
+                  <span>Rs. 99</span>
                 </div>
 
                 <button 

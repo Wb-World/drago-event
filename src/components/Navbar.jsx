@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import logoImg from '../../image.png'
 
 const LINKS = [
   { label: 'Home',          to: '/'        },
@@ -18,8 +19,9 @@ export default function Navbar() {
     <>
       <nav className="navbar">
         <div className="navbar-inner">
-          <span className="navbar-logo" onClick={() => { navigate('/'); close() }}>
-            DRAGO EVENT<span>.</span>
+          <span className="navbar-logo" onClick={() => { navigate('/'); close() }} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <img src={logoImg} alt="Drago Logo" style={{ height: '32px', width: 'auto', display: 'block', borderRadius: '4px' }} />
+            DRAGO EVENT
           </span>
 
           <ul className="navbar-links">
